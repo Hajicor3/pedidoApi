@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: pedidosApi
+
+server:
+  port: 8083
