@@ -1,6 +1,8 @@
-spring:
+Spring:
   application:
     name: pedidosApi
-
+  profiles:
+    active:
+    - ${SPRING_PROFILE:teste}
 server:
   port: 8083

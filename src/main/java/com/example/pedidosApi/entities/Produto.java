@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Produto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private Long idProduto;
+	private Long id;
 	private String nome;
 	private Double preco;
 }
