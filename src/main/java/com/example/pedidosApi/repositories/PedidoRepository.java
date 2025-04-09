@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.pedidosApi.entities.Pedido;
 
-public interface PedidoRepositorie extends JpaRepository<Pedido, Long>{
+public interface PedidoRepository extends JpaRepository<Pedido, Long>{
 
 }

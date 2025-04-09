@@ -1,16 +1,44 @@
-package com.example.pedidosApi.entities.pk;
-
-import com.example.pedidosApi.entities.Pedido;
+	package com.example.pedidosApi.entities.pk;
+	
+	import java.io.Serializable;
+	import java.util.Objects;
+	
+	import com.example.pedidosApi.entities.Pedido;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.ManyToOne;
-import lombok.Data;
-
-@Embeddable
-@Data
-public class ItemPedidoPK {
+	import jakarta.persistence.ManyToOne;
+	import lombok.AllArgsConstructor;
+	import lombok.Data;
+	import lombok.NoArgsConstructor;
 	
-	@ManyToOne
-	private Pedido Pedido;
-	private Long idProduto;
-}
+	@Embeddable
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public class ItemPedidoPK implements Serializable{
+		private static final long serialVersionUID = 1L;
+		
+		@ManyToOne
+		@JsonIgnore
+		private Pedido pedido;
+		private Long idProduto;
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ItemPedidoPK other = (ItemPedidoPK) obj;
+			return Objects.equals(pedido, other.pedido) && Objects.equals(idProduto, other.idProduto);
+		}
+		@Override
+		public int hashCode() {
+			return Objects.hash(pedido, idProduto);
+		}
+		
+		
+	}

@@ -1,6 +1,6 @@
 Spring:
   application:
-    name: pedidosApi
+    name: apipedidos
   profiles:
     active:
     - ${SPRING_PROFILE:teste}
