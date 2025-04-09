@@ -1,19 +1,22 @@
 	package com.example.pedidosApi.entities.pk;
 	
 	import java.io.Serializable;
-	import java.util.Objects;
-	
-	import com.example.pedidosApi.entities.Pedido;
+import java.util.Objects;
+
+import com.example.pedidosApi.entities.Pedido;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Embeddable;
-	import jakarta.persistence.ManyToOne;
-	import lombok.AllArgsConstructor;
-	import lombok.Data;
-	import lombok.NoArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 	
 	@Embeddable
-	@Data
+	@Getter
+	@Setter
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public class ItemPedidoPK implements Serializable{
@@ -21,6 +24,7 @@ import jakarta.persistence.Embeddable;
 		
 		@ManyToOne
 		@JsonIgnore
+		@JoinColumn(name = "id_pedido")
 		private Pedido pedido;
 		private Long idProduto;
 		

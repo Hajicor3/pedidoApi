@@ -3,6 +3,7 @@ package com.example.pedidosApi.services;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -10,11 +11,14 @@ import com.example.pedidosApi.entities.ItemPedido;
 import com.example.pedidosApi.entities.Pedido;
 import com.example.pedidosApi.entities.Produto;
 import com.example.pedidosApi.entities.dtos.ItemPedidoRequest;
+import com.example.pedidosApi.entities.dtos.ItemPedidoResponse;
 import com.example.pedidosApi.entities.dtos.PedidoRequest;
+import com.example.pedidosApi.entities.dtos.PedidoResponse;
 import com.example.pedidosApi.entities.pk.ItemPedidoPK;
 import com.example.pedidosApi.repositories.PedidoRepository;
 import com.example.pedidosApi.repositories.feign.ProdutosRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +28,7 @@ public class PedidoService {
 	private final PedidoRepository pedidoRepository;
 	private final ProdutosRepository produtosRepository;
 	
+	@Transactional
 	public Pedido criar(PedidoRequest pedido) {
 		var pedidoSalvo = new Pedido();
 		pedidoSalvo.setClienteId(pedido.getClienteId());
@@ -40,5 +45,25 @@ public class PedidoService {
 		pedidoSalvo.setItemsPedido(lista);
 		pedidoRepository.save(pedidoSalvo);
 		return pedidoSalvo;
+	}
+	
+	@Transactional
+	public PedidoResponse resgatarPedido(Long id) {
+		
+		var pedido = pedidoRepository.getReferenceById(id);
+		var itemPedidos = pedido.getItemsPedido().stream().map(x -> ItemPedidoResponse
+				.builder()
+				.preco(x.getPreco())
+				.quantidade(x.getQuantidade())
+				.produtoId(x.getId().getIdProduto())
+				.build()).collect(Collectors.toSet());
+		
+		var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(), itemPedidos, pedido.getMomento());
+		return pedidoResponse;
+	}
+	
+	@Transactional
+	public void deletar(Long id) {
+		pedidoRepository.deleteById(id);
 	}
 }
