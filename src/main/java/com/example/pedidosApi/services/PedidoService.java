@@ -33,16 +33,13 @@ public class PedidoService {
 		var pedidoSalvo = new Pedido();
 		pedidoSalvo.setClienteId(pedido.getClienteId());
 		pedidoSalvo.setStatus(pedido.getStatus());
-		pedidoSalvo.setMomento(Instant.now());
-		
-		Set<ItemPedido> lista = new HashSet<>();
+		pedidoSalvo.atualizarMomento();
 		
 		for (ItemPedidoRequest x : pedido.getItems()) {
 			Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
 			ItemPedido item = new ItemPedido(new ItemPedidoPK(pedidoSalvo,x.getProdutoId()),produto.getPreco(),x.getQuantidade());
-			lista.add(item);
+			pedidoSalvo.adicionarItem(item);
 		}
-		pedidoSalvo.setItemsPedido(lista);
 		pedidoRepository.save(pedidoSalvo);
 		return pedidoSalvo;
 	}

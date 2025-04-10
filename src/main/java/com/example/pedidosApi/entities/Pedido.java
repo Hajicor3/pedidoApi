@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,12 +18,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "tb_pedido")
 @Getter
-@Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Pedido implements Serializable {
@@ -41,12 +38,41 @@ public class Pedido implements Serializable {
 	private Instant momento;
 	
 	public Pedido(Long clienteId, StatusPedido status, Set<ItemPedido> itemsPedido) {
-		this.clienteId = clienteId;
-		this.status = status;
-		this.itemsPedido = itemsPedido;
+		setClienteId(clienteId);
+		setStatus(status);
+		this.itemsPedido = new HashSet<>();
+		if(itemsPedido != null) {
+			this.itemsPedido.addAll(itemsPedido);
+		}
 		this.momento = Instant.now();
 	}
 
+	public void setClienteId(Long clientId) {
+		if(clientId <= 0 || clientId == null) {
+			throw new IllegalArgumentException("O id deve ser um id válido!");
+		}
+		this.clienteId = clientId;
+	}
+	
+	public void setStatus(StatusPedido status) {
+		Objects.requireNonNull(status, "O status não pode ser nulo!");
+		this.status = status;
+	}
+	
+	public void adicionarItem(ItemPedido itemPedido) {
+		Objects.requireNonNull(itemPedido, "Item inválido");
+		itemsPedido.add(itemPedido);
+	}
+	
+	public void removerItem(ItemPedido itemPedido) {
+		Objects.requireNonNull(itemPedido, "Item inválido");
+		itemsPedido.remove(itemPedido);
+	}
+	
+	public void atualizarMomento() {
+		this.momento = Instant.now();
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
