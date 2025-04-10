@@ -15,7 +15,9 @@ import com.example.pedidosApi.entities.dtos.PedidoResponse;
 import com.example.pedidosApi.entities.pk.ItemPedidoPK;
 import com.example.pedidosApi.repositories.PedidoRepository;
 import com.example.pedidosApi.repositories.feign.ProdutosRepository;
+import com.example.pedidosApi.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +46,7 @@ public class PedidoService {
 	
 	@Transactional
 	public PedidoResponse resgatarPedido(Long id) {
-		
+		try {
 		var pedido = pedidoRepository.getReferenceById(id);
 		var itemPedidos = pedido.getItemsPedido().stream().map(x -> ItemPedidoResponse
 				.builder()
@@ -55,30 +57,56 @@ public class PedidoService {
 		
 		var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(), itemPedidos, pedido.getMomento());
 		return pedidoResponse;
+		}
+		catch(NullPointerException e) {
+			throw new ResourceNotFoundException(id);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 	
 	@Transactional
 	public void deletar(Long id) {
-		pedidoRepository.deleteById(id);
+		var pedido = pedidoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+		pedidoRepository.delete(pedido);
 	}
 	
 	@Transactional
 	public void adicionarItem(Set<ItemPedido> item, Long id) {
-		var pedido = pedidoRepository.getReferenceById(id);
 		
-		for(ItemPedido x: item) {
-			pedido.adicionarItem(x);
+		try {
+			var pedido = pedidoRepository.getReferenceById(id);
+			
+			for(ItemPedido x: item) {
+				pedido.adicionarItem(x);
+			}
+			pedidoRepository.save(pedido);
 		}
-		pedidoRepository.save(pedido);
+		catch(NullPointerException e) {
+			throw new ResourceNotFoundException(id);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 	
 	@Transactional
 	public void removerItem(Set<ItemPedido> item, Long id) {
-		var pedido = pedidoRepository.getReferenceById(id);
 		
-		for(ItemPedido x: item) {
-			pedido.removerItem(x);
+		try {
+			var pedido = pedidoRepository.getReferenceById(id);
+			
+			for(ItemPedido x: item) {
+				pedido.removerItem(x);
+			}
+			pedidoRepository.save(pedido);
 		}
-		pedidoRepository.save(pedido);
+		catch(NullPointerException e) {
+			throw new ResourceNotFoundException(id);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 }
