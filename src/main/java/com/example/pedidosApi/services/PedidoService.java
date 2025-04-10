@@ -1,5 +1,6 @@
 package com.example.pedidosApi.services;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -59,5 +60,25 @@ public class PedidoService {
 	@Transactional
 	public void deletar(Long id) {
 		pedidoRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public void adicionarItem(Set<ItemPedido> item, Long id) {
+		var pedido = pedidoRepository.getReferenceById(id);
+		
+		for(ItemPedido x: item) {
+			pedido.adicionarItem(x);
+		}
+		pedidoRepository.save(pedido);
+	}
+	
+	@Transactional
+	public void removerItem(Set<ItemPedido> item, Long id) {
+		var pedido = pedidoRepository.getReferenceById(id);
+		
+		for(ItemPedido x: item) {
+			pedido.removerItem(x);
+		}
+		pedidoRepository.save(pedido);
 	}
 }
