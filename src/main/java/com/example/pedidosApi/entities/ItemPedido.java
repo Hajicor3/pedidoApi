@@ -8,14 +8,12 @@ import com.example.pedidosApi.entities.pk.ItemPedidoPK;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tb_item_pedido")
-@Data
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
 public class ItemPedido implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -26,12 +24,33 @@ public class ItemPedido implements Serializable{
 	private Double preco;
 	private Long quantidade;
 	
+	public ItemPedido(ItemPedidoPK id, Double preco, Long quantidade) {
+		this.id = id;
+		setPreco(preco);
+		setQuantidade(quantidade);
+	}
 
+	
+	public void setQuantidade(Long quantidade) {
+		if(quantidade < 1 || quantidade == null) {
+			throw new IllegalArgumentException("a quantidade deve ser maior que zero!");
+		}
+		this.quantidade = quantidade;
+	}
+	
+	public void setPreco(Double preco) {
+		if(preco == null || preco <= 0) {
+			throw new IllegalArgumentException("Preço inválido!");
+		}
+		this.preco = preco;
+	}
+	
 	//metodo de multiplicar a quantidade pelo valor.
 	public Double totalPedido() {
 		return quantidade * preco;
 	}
-
+	
+	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -50,6 +69,4 @@ public class ItemPedido implements Serializable{
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
-	
 }

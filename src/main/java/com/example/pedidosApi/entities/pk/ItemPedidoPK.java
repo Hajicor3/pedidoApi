@@ -9,15 +9,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 	
 	@Embeddable
 	@Getter
-	@Setter
-	@AllArgsConstructor
 	@NoArgsConstructor
 	public class ItemPedidoPK implements Serializable{
 		private static final long serialVersionUID = 1L;
@@ -27,6 +23,11 @@ import lombok.Setter;
 		@JoinColumn(name = "id_pedido")
 		private Pedido pedido;
 		private Long idProduto;
+		
+		public ItemPedidoPK(Long idProduto, Pedido pedido) {
+			this.idProduto = Objects.requireNonNull(idProduto, "O ID do produto não pode ser nulo!");
+			this.pedido = Objects.requireNonNull(pedido, "O pedido não pode ser nulo!");
+		}
 		
 		@Override
 		public boolean equals(Object obj) {

@@ -1,8 +1,5 @@
 package com.example.pedidosApi.services;
 
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -37,7 +34,7 @@ public class PedidoService {
 		
 		for (ItemPedidoRequest x : pedido.getItems()) {
 			Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
-			ItemPedido item = new ItemPedido(new ItemPedidoPK(pedidoSalvo,x.getProdutoId()),produto.getPreco(),x.getQuantidade());
+			ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade());
 			pedidoSalvo.adicionarItem(item);
 		}
 		pedidoRepository.save(pedidoSalvo);
