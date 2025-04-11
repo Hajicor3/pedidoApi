@@ -33,17 +33,23 @@ public class Pedido implements Serializable {
 	
 	private Long clienteId;
 	private StatusPedido status;
+	private Pagamento pagamento;
 	@OneToMany(mappedBy = "id.pedido", cascade = CascadeType.ALL)
 	private Set<ItemPedido> itemsPedido = new HashSet<>();
 	private Instant momento;
 	
-	public Pedido(Long clienteId, StatusPedido status, Set<ItemPedido> itemsPedido) {
+	public Pedido(Long clienteId, StatusPedido status, Set<ItemPedido> itemsPedido, Pagamento pagamento) {
 		setClienteId(clienteId);
 		setStatus(status);
+		if(pagamento != null) {
+			registrarPagamento(pagamento);
+		}
+
 		this.itemsPedido = new HashSet<>();
 		if(itemsPedido != null) {
 			this.itemsPedido.addAll(itemsPedido);
 		}
+		
 		this.momento = Instant.now();
 	}
 
@@ -57,6 +63,12 @@ public class Pedido implements Serializable {
 	public void setStatus(StatusPedido status) {
 		Objects.requireNonNull(status, "O status não pode ser nulo!");
 		this.status = status;
+	}
+	
+	public void registrarPagamento(Pagamento pagamento) {
+		Objects.requireNonNull(pagamento, "Pagamento inválido");
+		this.pagamento = pagamento;
+		status = StatusPedido.PAGO;
 	}
 	
 	public void adicionarItem(ItemPedido itemPedido) {
