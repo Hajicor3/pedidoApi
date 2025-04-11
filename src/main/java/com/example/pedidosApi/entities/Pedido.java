@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.example.pedidosApi.entities.enums.StatusPedido;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -36,15 +37,13 @@ public class Pedido implements Serializable {
 	private Pagamento pagamento;
 	@OneToMany(mappedBy = "id.pedido", cascade = CascadeType.ALL)
 	private Set<ItemPedido> itemsPedido = new HashSet<>();
+	@JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'",timezone = "GMT")
 	private Instant momento;
 	
 	public Pedido(Long clienteId, StatusPedido status, Set<ItemPedido> itemsPedido, Pagamento pagamento) {
 		setClienteId(clienteId);
 		setStatus(status);
-		if(pagamento != null) {
-			registrarPagamento(pagamento);
-		}
-
+		registrarPagamento(pagamento);
 		this.itemsPedido = new HashSet<>();
 		if(itemsPedido != null) {
 			this.itemsPedido.addAll(itemsPedido);
@@ -61,14 +60,19 @@ public class Pedido implements Serializable {
 	}
 	
 	public void setStatus(StatusPedido status) {
-		Objects.requireNonNull(status, "O status não pode ser nulo!");
-		this.status = status;
+		if(status != null) {
+			this.status = status;
+		}
+		else {
+			this.status = StatusPedido.AGUARDANDO_PAGAMENTO;
+		}
 	}
 	
 	public void registrarPagamento(Pagamento pagamento) {
-		Objects.requireNonNull(pagamento, "Pagamento inválido");
-		this.pagamento = pagamento;
-		status = StatusPedido.PAGO;
+		if(pagamento != null) {
+			this.pagamento = pagamento;
+			status = StatusPedido.PAGO;
+		}
 	}
 	
 	public void adicionarItem(ItemPedido itemPedido) {

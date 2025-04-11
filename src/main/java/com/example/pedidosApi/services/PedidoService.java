@@ -28,11 +28,13 @@ public class PedidoService {
 	private final PedidoRepository pedidoRepository;
 	private final ProdutosRepository produtosRepository;
 	
+	
 	@Transactional
 	public Pedido criar(PedidoRequest pedido) {
 		var pedidoSalvo = new Pedido();
 		pedidoSalvo.setClienteId(pedido.getClienteId());
 		pedidoSalvo.setStatus(pedido.getStatus());
+		pedidoSalvo.registrarPagamento(pedido.getPagamento());
 		pedidoSalvo.atualizarMomento();
 		
 		for (ItemPedidoRequest x : pedido.getItems()) {
@@ -55,7 +57,7 @@ public class PedidoService {
 				.produtoId(x.getId().getIdProduto())
 				.build()).collect(Collectors.toSet());
 		
-		var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(), itemPedidos, pedido.getMomento());
+		var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(),pedido.getPagamento(), itemPedidos, pedido.getMomento());
 		return pedidoResponse;
 		}
 		catch(NullPointerException e) {
