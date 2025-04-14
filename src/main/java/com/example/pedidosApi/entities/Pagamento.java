@@ -27,7 +27,7 @@ public class Pagamento implements Serializable {
 	private Instant momentoPagamento;
 	
 	public Pagamento(Instant momentoPagamento) {
-		this.momentoPagamento = momentoPagamento;
+		setMomentoPagamento();
 	}
 	
 	public void setMomentoPagamento() {

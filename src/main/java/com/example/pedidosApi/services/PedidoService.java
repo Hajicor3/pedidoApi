@@ -10,6 +10,7 @@ import com.example.pedidosApi.entities.Pedido;
 import com.example.pedidosApi.entities.Produto;
 import com.example.pedidosApi.entities.dtos.ItemPedidoRequest;
 import com.example.pedidosApi.entities.dtos.ItemPedidoResponse;
+import com.example.pedidosApi.entities.dtos.MovimentacaoRequest;
 import com.example.pedidosApi.entities.dtos.PedidoRequest;
 import com.example.pedidosApi.entities.dtos.PedidoResponse;
 import com.example.pedidosApi.entities.pk.ItemPedidoPK;
@@ -39,6 +40,8 @@ public class PedidoService {
 		
 		for (ItemPedidoRequest x : pedido.getItems()) {
 			Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
+			MovimentacaoRequest mov = new MovimentacaoRequest(x.getProdutoId(), x.getQuantidade());
+			produtosRepository.registrarMovimentacaoDeProduto(mov);
 			ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade());
 			pedidoSalvo.adicionarItem(item);
 		}
