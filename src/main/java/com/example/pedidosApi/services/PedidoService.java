@@ -17,7 +17,9 @@ import com.example.pedidosApi.entities.pk.ItemPedidoPK;
 import com.example.pedidosApi.repositories.PedidoRepository;
 import com.example.pedidosApi.repositories.feign.ProdutosRepository;
 import com.example.pedidosApi.services.exceptions.ResourceNotFoundException;
+import com.example.pedidosApi.services.exceptions.feignexceptions.FeignExceptionHandler;
 
+import feign.FeignException.FeignClientException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,21 +34,26 @@ public class PedidoService {
 	
 	@Transactional
 	public Pedido criar(PedidoRequest pedido) {
-		var pedidoSalvo = new Pedido();
-		pedidoSalvo.setClienteId(pedido.getClienteId());
-		pedidoSalvo.setStatus(pedido.getStatus());
-		pedidoSalvo.registrarPagamento(pedido.getPagamento());
-		pedidoSalvo.atualizarMomento();
-		
-		for (ItemPedidoRequest x : pedido.getItems()) {
-			Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
-			MovimentacaoRequest mov = new MovimentacaoRequest(x.getProdutoId(), x.getQuantidade());
-			produtosRepository.registrarMovimentacaoDeProduto(mov);
-			ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade());
-			pedidoSalvo.adicionarItem(item);
+		try {
+			var pedidoSalvo = new Pedido();
+			pedidoSalvo.setClienteId(pedido.getClienteId());
+			pedidoSalvo.setStatus(pedido.getStatus());
+			pedidoSalvo.registrarPagamento(pedido.getPagamento());
+			pedidoSalvo.atualizarMomento();
+			
+			for (ItemPedidoRequest x : pedido.getItems()) {
+				Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
+				MovimentacaoRequest mov = new MovimentacaoRequest(x.getProdutoId(), x.getQuantidade());
+				produtosRepository.registrarMovimentacaoDeProduto(mov);
+				ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade());
+				pedidoSalvo.adicionarItem(item);
+			}
+			pedidoRepository.save(pedidoSalvo);
+			return pedidoSalvo;
 		}
-		pedidoRepository.save(pedidoSalvo);
-		return pedidoSalvo;
+		catch(FeignClientException e) {
+			throw new FeignExceptionHandler(e.status(), e.getMessage());
+		}
 	}
 	
 	@Transactional

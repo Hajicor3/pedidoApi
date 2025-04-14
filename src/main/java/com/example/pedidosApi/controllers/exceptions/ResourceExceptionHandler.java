@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.pedidosApi.services.exceptions.ResourceNotFoundException;
+import com.example.pedidosApi.services.exceptions.feignexceptions.FeignExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -28,6 +29,15 @@ public class ResourceExceptionHandler {
 		
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		String error = "Recurso não encontrado!";
+		StandardError err = new StandardError(Instant.now(),status.value(),error,e.getMessage(),request.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(FeignExceptionHandler.class)
+	public ResponseEntity<StandardError> handleFeignClientException(FeignExceptionHandler e, HttpServletRequest request) {
+		
+		HttpStatus status = HttpStatus.valueOf(e.getStatusCode());
+		String error = "Falha na comunicação com o microserviço!";
 		StandardError err = new StandardError(Instant.now(),status.value(),error,e.getMessage(),request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
