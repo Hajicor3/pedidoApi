@@ -21,13 +21,15 @@ public class ItemPedido implements Serializable{
 	@EmbeddedId
 	private ItemPedidoPK id = new ItemPedidoPK();
 	
+	private String nomeProduto;
 	private Double preco;
 	private Long quantidade;
 	
-	public ItemPedido(ItemPedidoPK id, Double preco, Long quantidade) {
+	public ItemPedido(ItemPedidoPK id, Double preco, Long quantidade, String nomeProduto) {
 		this.id = id;
 		setPreco(preco);
 		setQuantidade(quantidade);
+		setNomeProduto(nomeProduto);
 	}
 
 	
@@ -43,6 +45,13 @@ public class ItemPedido implements Serializable{
 			throw new IllegalArgumentException("Preço inválido!");
 		}
 		this.preco = preco;
+	}
+	
+	public void setNomeProduto(String nomeProduto) {
+		if(nomeProduto == null || nomeProduto.trim().isEmpty()) {
+			throw new IllegalArgumentException("O nome do produto não pode ser nulo ou vazio!");
+		}
+		this.nomeProduto = nomeProduto;
 	}
 	
 	//metodo de multiplicar a quantidade pelo valor.

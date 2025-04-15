@@ -45,7 +45,7 @@ public class PedidoService {
 				Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
 				MovimentacaoRequest mov = new MovimentacaoRequest(x.getProdutoId(), x.getQuantidade());
 				produtosRepository.registrarMovimentacaoDeProduto(mov);
-				ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade());
+				ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade(),produto.getNomeProduto());
 				pedidoSalvo.adicionarItem(item);
 			}
 			pedidoRepository.save(pedidoSalvo);
@@ -59,16 +59,18 @@ public class PedidoService {
 	@Transactional
 	public PedidoResponse resgatarPedido(Long id) {
 		try {
-		var pedido = pedidoRepository.getReferenceById(id);
-		var itemPedidos = pedido.getItemsPedido().stream().map(x -> ItemPedidoResponse
-				.builder()
-				.preco(x.getPreco())
-				.quantidade(x.getQuantidade())
-				.produtoId(x.getId().getIdProduto())
-				.build()).collect(Collectors.toSet());
-		
-		var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(),pedido.getPagamento(), itemPedidos, pedido.getMomento());
-		return pedidoResponse;
+			var pedido = pedidoRepository.getReferenceById(id);
+			var itemPedidos = pedido.getItemsPedido().stream().map(x -> ItemPedidoResponse
+					.builder()
+					.nome(x.getNomeProduto())
+					.preco(x.getPreco())
+					.quantidade(x.getQuantidade())
+					.produtoId(x.getId().getIdProduto())
+					.build())
+					.collect(Collectors.toSet());
+			
+			var pedidoResponse = new PedidoResponse(pedido.getId(), pedido.getClienteId(), pedido.getStatus(),pedido.getPagamento(), itemPedidos, pedido.getMomento());
+			return pedidoResponse;
 		}
 		catch(NullPointerException e) {
 			throw new ResourceNotFoundException(id);

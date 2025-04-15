@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ItemPedidoResponse {
 	
 	private Long produtoId;
+	private String nome;
 	private Long quantidade;
 	private Double preco;
 }
