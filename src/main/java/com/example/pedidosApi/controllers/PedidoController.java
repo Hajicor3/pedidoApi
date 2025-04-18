@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.pedidosApi.entities.ItemPedido;
-import com.example.pedidosApi.entities.Pedido;
 import com.example.pedidosApi.entities.dtos.PedidoRequest;
 import com.example.pedidosApi.entities.dtos.PedidoResponse;
 import com.example.pedidosApi.services.PedidoService;
@@ -30,9 +29,9 @@ public class PedidoController {
 	private final PedidoService pedidoService;
 	
 	@PostMapping
-	public ResponseEntity<Pedido> criarPedido(@RequestBody PedidoRequest pedido) {
+	public ResponseEntity<PedidoResponse> criarPedido(@RequestBody PedidoRequest pedido) {
 		var pedidoSalvo = pedidoService.criar(pedido);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(pedidoSalvo.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pedidoSalvo.getId()).toUri();
 		return ResponseEntity.created(uri).body(pedidoSalvo);
 	}
 	

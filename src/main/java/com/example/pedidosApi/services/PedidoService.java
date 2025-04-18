@@ -33,7 +33,7 @@ public class PedidoService {
 	
 	
 	@Transactional
-	public Pedido criar(PedidoRequest pedido) {
+	public PedidoResponse criar(PedidoRequest pedido) {
 		try {
 			var pedidoSalvo = new Pedido();
 			pedidoSalvo.setClienteId(pedido.getClienteId());
@@ -41,6 +41,7 @@ public class PedidoService {
 			pedidoSalvo.registrarPagamento(pedido.getPagamento());
 			pedidoSalvo.atualizarMomento();
 			
+			//Trasnformando um itemPedidoRequest em itemPedido
 			for (ItemPedidoRequest x : pedido.getItems()) {
 				Produto produto = produtosRepository.pegarProduto(x.getProdutoId()).getBody();
 				MovimentacaoRequest mov = new MovimentacaoRequest(x.getProdutoId(), x.getQuantidade());
@@ -48,8 +49,24 @@ public class PedidoService {
 				ItemPedido item = new ItemPedido(new ItemPedidoPK(x.getProdutoId(),pedidoSalvo),produto.getPreco(),x.getQuantidade(),produto.getNomeProduto());
 				pedidoSalvo.adicionarItem(item);
 			}
+			
 			pedidoRepository.save(pedidoSalvo);
-			return pedidoSalvo;
+			//Convertendo um itemPedido em response
+			var itemsResponse = pedidoSalvo.getItemsPedido().stream().map(x -> new ItemPedidoResponse
+					(x.getId().getIdProduto(),
+							x.getNomeProduto(),
+							x.getQuantidade(),
+							x.getPreco()))
+					.collect(Collectors.toSet());
+			
+			return new PedidoResponse(
+					pedidoSalvo.getId(),
+					pedidoSalvo.getClienteId(),
+					pedidoSalvo.getStatus(),
+					pedidoSalvo.getPagamento(),
+					itemsResponse, 
+					pedidoSalvo.getMomento()
+					);
 		}
 		catch(FeignClientException e) {
 			throw new FeignExceptionHandler(e.status(), e.getMessage());
