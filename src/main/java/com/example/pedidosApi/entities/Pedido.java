@@ -60,7 +60,7 @@ public class Pedido implements Serializable {
 	}
 	
 	public void setStatus(StatusPedido status) {
-		if(status != null) {
+		if(status != null || pagamento != null) {
 			this.status = status;
 		}
 		else {
