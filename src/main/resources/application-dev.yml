@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    username: ${SPRING_POSTGRES_USERNAME}
+    url: ${SPRING_POSTGRES_URL}
+    password: ${SPRING_POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+api:
+  produtos:
+    url: ${API_PRODUTOS_URL}

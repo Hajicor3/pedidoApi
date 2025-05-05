@@ -12,3 +12,7 @@ spring:
     properties:
       hibernate:
         formater-sql: true
+
+api:
+  produtos:
+    url: http://localhost:8080/produtos

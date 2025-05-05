@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.example.pedidosApi.entities.Produto;
 import com.example.pedidosApi.entities.dtos.MovimentacaoRequest;
 
-@FeignClient(name = "apiprodutos", url = "http://localhost:8080/produtos")
+@FeignClient(name = "apiprodutos", url = "${api.produtos.url}")
 public interface ProdutosRepository {
 	
 	@GetMapping(value = "/{id}")
